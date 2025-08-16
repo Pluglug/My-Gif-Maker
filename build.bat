@@ -35,7 +35,7 @@ if exist "*.spec" del /q "*.spec"
 
 REM PyInstallerでのコンパイル
 echo 🔄 PyInstallerでコンパイル中...
-pyinstaller --onefile --windowed --name "GifMaker" gif_converter/main.py
+pyinstaller --onefile --windowed --name "GifMaker" run.py
 if errorlevel 1 (
     echo ❌ コンパイルに失敗しました
     pause
@@ -49,7 +49,7 @@ if exist "dist\GifMaker.exe" (
     echo.
     echo 使用方法:
     echo   直接実行: dist\GifMaker.exe
-    echo   開発時実行: python gif_converter\main.py
+    echo   開発時実行: python run.py
     echo   モジュール実行: python -m gif_converter.main
 ) else (
     echo ❌ 実行可能ファイルが見つかりません

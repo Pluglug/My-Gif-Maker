@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name="gif_converter",
     version="1.0.0",
-    packages=find_packages(),
+    packages=find_packages(where="source"),
+    package_dir={"": "source"},
     install_requires=[
         "PyQt5>=5.15.9",
         "Pillow>=10.0.0",

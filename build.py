@@ -59,7 +59,7 @@ def main():
     
     # 4. PyInstallerでのコンパイル
     if not run_command(
-        'pyinstaller --onefile --windowed --name "GifMaker" gif_converter/main.py',
+        'pyinstaller --onefile --windowed --name "GifMaker" run.py',
         "PyInstallerでのコンパイル"
     ):
         return False
@@ -73,7 +73,7 @@ def main():
         print(f"ファイルサイズ: {size_mb:.1f} MB")
         print("\n使用方法:")
         print(f"  直接実行: {exe_path}")
-        print("  開発時実行: python gif_converter/main.py")
+        print("  開発時実行: python run.py")
         print("  モジュール実行: python -m gif_converter.main")
         return True
     else:

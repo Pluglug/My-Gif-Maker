@@ -1,6 +1,6 @@
-gpt-5を利用したLLMポン出しアプリです。
-
 # MP4→GIF Converter (PyQt)
+
+gpt-5を利用したLLMポン出しアプリです。
 
 OBSで画面キャプチャ → AviUtlで軽く編集 → MP4を書き出し → このツールで低コスト・高品質なGIFにする、という用途向けのラフなGUIアプリです。FFmpegの2パス（パレット生成→適用）でサイズと品質のバランスを取りつつ、ドラッグ&ドロップや一括変換、プレビューも備えています。
 
@@ -23,10 +23,16 @@ cd "C:\Users\YourName\Documents\My-Gif-Maker"
 python -m venv .venv
 & ".\.venv\Scripts\Activate.ps1"
 python -m pip install -U pip setuptools wheel
-python -m pip install -r gif_converter\requirements.txt
+python -m pip install -r source\requirements.txt
+
+# 開発で起動（推奨）
 python -m gif_converter.main
+
+# あるいは未インストールでも実行できる起動口
+python run.py
 ```
-- 相対インポートの関係で、`python gif_converter/main.py` ではなく「モジュール実行」してください。
+※ `python source/gif_converter/main.py` のような直接スクリプト実行は、
+パッケージ相対インポートの仕様上失敗します。必ず上記のいずれかで起動してください。
 
 ## 使い方
 1) 左のリストへMP4をドラッグ&ドロップ（または「追加…」）
@@ -68,18 +74,21 @@ presets = {
 - 変換: FFmpeg（`subprocess`）
 - パス/設定: `pathlib` / JSON
 
-```
-gif_converter/
-├── main.py              # エントリポイント（python -m で実行）
-├── gui/
-│   ├── main_window.py   # メインウィンドウ、D&D、プレビュー、進捗
-│   ├── preview.py       # 静止画/GIFプレビュー
-│   └── settings.py      # プリセット/詳細設定
-├── core/
-│   ├── converter.py     # FFmpeg 2パス変換（進捗読み取り）
-│   └── utils.py         # ffprobe/時間/出力名ユーティリティ
-├── config.py            # プリセット/設定保存/履歴
-└── requirements.txt
+```text
+source/
+├── requirements.txt
+└── gif_converter/
+    ├── main.py              # エントリポイント
+    ├── gui/
+    │   ├── main_window.py   # メインウィンドウ、D&D、プレビュー、進捗
+    │   ├── preview.py       # 静止画/GIFプレビュー
+    │   └── settings.py      # プリセット/詳細設定
+    ├── core/
+    │   ├── converter.py     # FFmpeg 2パス変換（進捗読み取り）
+    │   └── utils.py         # ffprobe/時間/出力名ユーティリティ
+    ├── config.py            # プリセット/設定保存/履歴
+    └── __init__.py
+run.py                       # スクリプト実行用の薄いエントリ
 ```
 
 ## メモ
