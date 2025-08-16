@@ -35,18 +35,22 @@ class PreviewWidget(QWidget):
             im = Image.open(str(png_path))
             qim = PilImageQt.ImageQt(im.convert("RGBA"))
             pix = QPixmap.fromImage(qim)
-            self.label_src.setPixmap(pix.scaled(
-                self.label_src.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-            ))
+            self.label_src.setPixmap(
+                pix.scaled(
+                    self.label_src.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+                )
+            )
         except Exception:
             self.label_src.setText("プレビュー読み込み失敗")
 
     def resizeEvent(self, e) -> None:  # type: ignore[override]
         # サイズが変わったらリスケール
         if pix := self.label_src.pixmap():
-            self.label_src.setPixmap(pix.scaled(
-                self.label_src.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-            ))
+            self.label_src.setPixmap(
+                pix.scaled(
+                    self.label_src.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+                )
+            )
         super().resizeEvent(e)
 
     def show_gif(self, gif_path: Path) -> None:

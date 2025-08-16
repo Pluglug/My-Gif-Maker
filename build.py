@@ -10,13 +10,14 @@ import os
 import shutil
 from pathlib import Path
 
+
 def run_command(command, description):
     """コマンドを実行し、結果を表示"""
     print(f"🔄 {description}...")
     print(f"実行コマンド: {command}")
-    
+
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    
+
     if result.returncode == 0:
         print(f"✅ {description}完了")
         if result.stdout:
@@ -25,45 +26,46 @@ def run_command(command, description):
         print(f"❌ {description}失敗")
         print("エラー:", result.stderr)
         return False
-    
+
     return True
+
 
 def main():
     print("🚀 GIF Converter ビルドプロセス開始")
     print("=" * 50)
-    
+
     # 1. 仮想環境のアクティベート確認
-    if not os.environ.get('VIRTUAL_ENV'):
+    if not os.environ.get("VIRTUAL_ENV"):
         print("⚠️  仮想環境がアクティベートされていません")
         print("以下のコマンドを実行してください:")
         print("  .venv\\Scripts\\activate")
         return False
-    
+
     print(f"✅ 仮想環境: {os.environ.get('VIRTUAL_ENV')}")
-    
+
     # 2. パッケージのインストール確認
     if not run_command("pip show gif_converter", "パッケージ情報確認"):
         print("📦 パッケージをインストールします...")
         if not run_command("pip install -e .", "パッケージの開発モードインストール"):
             return False
-    
+
     # 3. 古いビルドファイルの削除
     print("🧹 古いビルドファイルを削除...")
-    for path in ['build', 'dist', '*.spec']:
+    for path in ["build", "dist", "*.spec"]:
         if os.path.exists(path):
             if os.path.isdir(path):
                 shutil.rmtree(path)
             else:
                 os.remove(path)
             print(f"削除: {path}")
-    
+
     # 4. PyInstallerでのコンパイル
     if not run_command(
         'pyinstaller --onefile --windowed --name "GifMaker" run.py',
-        "PyInstallerでのコンパイル"
+        "PyInstallerでのコンパイル",
     ):
         return False
-    
+
     # 5. 結果確認
     exe_path = Path("dist/GifMaker.exe")
     if exe_path.exists():
@@ -79,6 +81,7 @@ def main():
     else:
         print("❌ 実行可能ファイルが見つかりません")
         return False
+
 
 if __name__ == "__main__":
     success = main()

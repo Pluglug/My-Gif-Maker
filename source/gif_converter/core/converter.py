@@ -36,7 +36,9 @@ class ConverterWorker(QObject):
         if not inp.exists():
             self.finished.emit(str(inp), False, "", "入力ファイルが見つかりません")
             return
-        total_duration = task.duration if task.duration > 0 else probe_duration(inp) - task.start
+        total_duration = (
+            task.duration if task.duration > 0 else probe_duration(inp) - task.start
+        )
         total_duration = max(total_duration, 0.00001)
 
         with tempfile.TemporaryDirectory(prefix="gifconv_") as td:

@@ -55,7 +55,9 @@ def ensure_output_dir(path: Path) -> Path:
     return path
 
 
-def build_output_filename(template: str, input_path: Path, settings: Dict[str, Any]) -> str:
+def build_output_filename(
+    template: str, input_path: Path, settings: Dict[str, Any]
+) -> str:
     name = input_path.stem
     mapping = {
         "name": name,
@@ -74,7 +76,9 @@ def parse_progress_time_from_line(line: str) -> Optional[float]:
     return parse_time_to_seconds(m.group(1))
 
 
-def extract_frame_png(input_path: Path, time_sec: float, output_png: Path, width: int) -> bool:
+def extract_frame_png(
+    input_path: Path, time_sec: float, output_png: Path, width: int
+) -> bool:
     # 1フレーム抽出
     cmd = [
         "ffmpeg",

@@ -127,10 +127,12 @@ class MainWindow(QMainWindow):
         self.preview = PreviewWidget()
         right_v.addWidget(self.preview, 1)
         self.settings = SettingsPanel()
-        self.settings.apply_dict({
-            "preset": self.cfg.last_preset,
-            **self.cfg.custom_settings,
-        })
+        self.settings.apply_dict(
+            {
+                "preset": self.cfg.last_preset,
+                **self.cfg.custom_settings,
+            }
+        )
         right_v.addWidget(self.settings)
 
         # 出力先/テンプレート
@@ -145,11 +147,11 @@ class MainWindow(QMainWindow):
         # 時間範囲
         t_row = QHBoxLayout()
         self.start_sec = QDoubleSpinBox()
-        self.start_sec.setRange(0.0, 24*3600)
+        self.start_sec.setRange(0.0, 24 * 3600)
         self.start_sec.setDecimals(3)
         self.start_sec.setSingleStep(0.1)
         self.duration_sec = QDoubleSpinBox()
-        self.duration_sec.setRange(0.0, 24*3600)
+        self.duration_sec.setRange(0.0, 24 * 3600)
         self.duration_sec.setDecimals(3)
         self.duration_sec.setSingleStep(0.1)
         t_row.addWidget(QLabel("開始(s)"))
@@ -162,7 +164,9 @@ class MainWindow(QMainWindow):
         # 設定の初期反映（時間）
         try:
             self.start_sec.setValue(float(self.cfg.custom_settings.get("start", 0.0)))
-            self.duration_sec.setValue(float(self.cfg.custom_settings.get("duration", 0.0)))
+            self.duration_sec.setValue(
+                float(self.cfg.custom_settings.get("duration", 0.0))
+            )
         except Exception:
             pass
 
@@ -209,18 +213,29 @@ class MainWindow(QMainWindow):
         s = self.settings.to_dict()
         self.cfg.last_preset = s.get("preset", self.cfg.last_preset)
         self.cfg.custom_settings.update({k: s[k] for k in ("fps", "width", "colors")})
-        self.cfg.custom_settings.update({
-            "start": float(self.start_sec.value()),
-            "duration": float(self.duration_sec.value()),
-        })
-        self.cfg.last_output_dir = self.edit_output.text().strip() or self.cfg.last_output_dir
-        self.cfg.filename_template = self.edit_template.text().strip() or self.cfg.filename_template
+        self.cfg.custom_settings.update(
+            {
+                "start": float(self.start_sec.value()),
+                "duration": float(self.duration_sec.value()),
+            }
+        )
+        self.cfg.last_output_dir = (
+            self.edit_output.text().strip() or self.cfg.last_output_dir
+        )
+        self.cfg.filename_template = (
+            self.edit_template.text().strip() or self.cfg.filename_template
+        )
         save_config(self.cfg)
         super().closeEvent(e)
 
     # 操作系
     def _on_add_files(self) -> None:
-        files, _ = QFileDialog.getOpenFileNames(self, "動画ファイルを選択", str(Path.cwd()), "Video (*.mp4 *.mov *.mkv *.avi)")
+        files, _ = QFileDialog.getOpenFileNames(
+            self,
+            "動画ファイルを選択",
+            str(Path.cwd()),
+            "Video (*.mp4 *.mov *.mkv *.avi)",
+        )
         for f in files:
             p = Path(f)
             if not self._has_in_list(p):
@@ -234,7 +249,9 @@ class MainWindow(QMainWindow):
             self.list_files.takeItem(row)
 
     def _on_browse_output(self) -> None:
-        d = QFileDialog.getExistingDirectory(self, "出力フォルダ", self.edit_output.text())
+        d = QFileDialog.getExistingDirectory(
+            self, "出力フォルダ", self.edit_output.text()
+        )
         if d:
             self.edit_output.setText(d)
 
@@ -264,13 +281,19 @@ class MainWindow(QMainWindow):
         out_dir = Path(tempfile.mkdtemp(prefix="gifprev_"))
         # 静止画
         png = out_dir / "frame.png"
-        extract_frame_png(input_path, float(self.start_sec.value()), png, s["width"])  # 開始時刻のフレーム
+        extract_frame_png(
+            input_path, float(self.start_sec.value()), png, s["width"]
+        )  # 開始時刻のフレーム
         self.preview.show_source_png(png)
         # 短いGIF
         base_dur = probe_duration(input_path)
         preview_dur = 3.0
         dur_from_ui = float(self.duration_sec.value())
-        dur = dur_from_ui if dur_from_ui > 0 else min(preview_dur, max(0.1, base_dur - float(self.start_sec.value())))
+        dur = (
+            dur_from_ui
+            if dur_from_ui > 0
+            else min(preview_dur, max(0.1, base_dur - float(self.start_sec.value())))
+        )
         task = ConversionTask(
             input_path=input_path,
             output_dir=out_dir,
@@ -290,7 +313,9 @@ class MainWindow(QMainWindow):
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(lambda: self.worker.convert(task))
         self.worker.progress.connect(self._on_progress)
-        self.worker.finished.connect(lambda f, ok, out, err: self._on_preview_done(temp_dir, ok, out, err))
+        self.worker.finished.connect(
+            lambda f, ok, out, err: self._on_preview_done(temp_dir, ok, out, err)
+        )
         self.worker.log.connect(self._append_log)
         self.thread.start()
 
@@ -298,7 +323,9 @@ class MainWindow(QMainWindow):
     def _on_progress(self, _file: str, percent: float, _line: str) -> None:
         self.progress.setValue(int(percent))
 
-    def _on_preview_done(self, _temp_dir: Path, ok: bool, out_path: str, err: str) -> None:
+    def _on_preview_done(
+        self, _temp_dir: Path, ok: bool, out_path: str, err: str
+    ) -> None:
         self._stop_worker()
         if ok:
             self.preview.show_gif(Path(out_path))
@@ -326,23 +353,29 @@ class MainWindow(QMainWindow):
         start_val = float(self.start_sec.value())
         duration_val = float(self.duration_sec.value())
 
-        files: List[Path] = [Path(self.list_files.item(i).text()) for i in range(self.list_files.count())]
+        files: List[Path] = [
+            Path(self.list_files.item(i).text()) for i in range(self.list_files.count())
+        ]
         tasks: List[ConversionTask] = []
         for f in files:
             if not f.exists():
                 continue
             self.cfg.add_recent_file(f)
-            output_name = build_output_filename(template, f, {"fps": fps, "width": width, "colors": colors})
-            tasks.append(ConversionTask(
-                input_path=f,
-                output_dir=out_dir,
-                fps=fps,
-                width=width,
-                colors=colors,
-                start=start_val,
-                duration=duration_val,
-                output_path=out_dir / output_name,
-            ))
+            output_name = build_output_filename(
+                template, f, {"fps": fps, "width": width, "colors": colors}
+            )
+            tasks.append(
+                ConversionTask(
+                    input_path=f,
+                    output_dir=out_dir,
+                    fps=fps,
+                    width=width,
+                    colors=colors,
+                    start=start_val,
+                    duration=duration_val,
+                    output_path=out_dir / output_name,
+                )
+            )
         if not tasks:
             QMessageBox.warning(self, "変換", "有効なファイルがありません")
             return
@@ -354,7 +387,7 @@ class MainWindow(QMainWindow):
     def _run_batch(self, tasks: List[ConversionTask]) -> None:
         # 直列に1つずつ処理
         self._batch_tasks = tasks  # type: ignore[attr-defined]
-        self._batch_index = 0      # type: ignore[attr-defined]
+        self._batch_index = 0  # type: ignore[attr-defined]
         self._start_next_in_batch()
 
     def _start_next_in_batch(self) -> None:
@@ -406,5 +439,8 @@ class MainWindow(QMainWindow):
             if not self._has_in_list(p):
                 self.list_files.addItem(str(p))
         else:
-            QMessageBox.warning(self, "最近使ったファイル", "ファイルが見つからないか対応形式ではありません")
-
+            QMessageBox.warning(
+                self,
+                "最近使ったファイル",
+                "ファイルが見つからないか対応形式ではありません",
+            )

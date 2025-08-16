@@ -90,7 +90,9 @@ def load_config() -> AppConfig:
 def save_config(cfg: AppConfig) -> None:
     cfg_path = get_config_path()
     try:
-        cfg_path.write_text(json.dumps(cfg.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+        cfg_path.write_text(
+            json.dumps(cfg.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     except Exception:
         # 保存失敗時は黙って無視（UI側で通知する場合は呼び出し側で）
         pass
