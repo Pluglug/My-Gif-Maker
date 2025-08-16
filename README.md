@@ -12,6 +12,8 @@ OBSで画面キャプチャ → AviUtlで軽く編集 → MP4を書き出し →
 - 一括変換と進捗表示、ログ表示
 - 設定保存（出力先/プリセット/カスタム/時間/テンプレ/履歴）
 
+<img width="679" height="616" alt="image" src="https://github.com/user-attachments/assets/e7ed3a5a-5076-4e20-87ef-841448a56083" />
+
 ## 動作要件
 - Windows 10+（PyQt5のホイールが入るPython）
 - Python 3.10+ 推奨
@@ -107,3 +109,4 @@ run.py                       # スクリプト実行用の薄いエントリ
 
 ## ライセンス
 MIT License
+
